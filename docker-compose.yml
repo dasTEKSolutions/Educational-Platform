@@ -1,0 +1,34 @@
+version: "3"
+services:
+  flask_app:
+    build:
+      context: ./
+      dockerfile: ./flask_app/Dockerfile.flask
+    ports:
+      - 5000:5000
+    environment:
+      - OPENAI_API_KEY=KEY_HERE # OpenAI API key for Flask app
+    depends_on:
+      - rabbitmq
+  reactjs_frontend:
+    build:
+      context: ./
+      dockerfile: ./reactjs_frontend/Dockerfile.reactjs
+    ports:
+      - 5173:5173
+  celery_worker:
+    build:
+      context: ./
+      dockerfile: ./celery_worker/Dockerfile.celery
+    environment:
+      - OPENAI_API_KEY=KEY_HERE # OpenAI API key for Celery worker
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: "rabbitmq:management-alpine"
+    ports:
+      - "15672:15672"
+networks:
+  default:
+    name: cel_net

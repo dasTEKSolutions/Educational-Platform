@@ -29,7 +29,7 @@ const ChatComponent = ({ endpoint }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://dastekeducationalplatform-flask_app-1:5000/api/progress/${taskID}`
+          `http://localhost:5000/api/progress/${taskID}`
         );
         const newMessages = response.data["data"];
 
@@ -60,13 +60,10 @@ const ChatComponent = ({ endpoint }) => {
 
           // Stop polling if "done" message is received
           if (messagesToAdd.includes("done")) {
-            const { data } = await axios.post(
-              "http://dastekeducationalplatform-flask_app-1:5000/clear",
-              {
-                msg: "recv_clear_data",
-                task_id: taskID,
-              }
-            );
+            const { data } = await axios.post("http://localhost:5000/clear", {
+              msg: "recv_clear_data",
+              task_id: taskID,
+            });
             setAskMsg(false);
           }
         }
@@ -109,7 +106,7 @@ const ChatComponent = ({ endpoint }) => {
 
       try {
         const { data } = await axios.post(
-          "http://dastekeducationalplatform-flask_app-1:5000/api/start",
+          "http://localhost:5000/api/start",
           {
             prompt: inputValue,
             img: file,

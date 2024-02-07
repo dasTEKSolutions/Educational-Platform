@@ -9,6 +9,7 @@ import redis
 def make_celery(app_name='celery_worker'):
     return Celery(
         app_name,
+        backend='redis://redis:6379/0',
         broker='amqp://guest:guest@rabbitmq',
     )
 

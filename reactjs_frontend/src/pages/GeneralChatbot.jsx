@@ -60,10 +60,13 @@ const ChatComponent = ({ endpoint }) => {
 
           // Stop polling if "done" message is received
           if (messagesToAdd.includes("done")) {
-            const { data } = await axios.post("http://localhost:5000/clear", {
-              msg: "recv_clear_data",
-              task_id: taskID,
-            });
+            const { data } = await axios.post(
+              "http://localhost:5000/api/clear",
+              {
+                msg: "recv_clear_data",
+                task_id: taskID,
+              }
+            );
             setAskMsg(false);
           }
         }

@@ -14,7 +14,7 @@ export default function Navbar() {
     <>
       <nav className=" sm:mb-0 mb-10 sm:justify-around  md:justify-around  lg:justify-around  xl:justify-around  p-2 mt-2 flex justify-between  shadow-xl">
         <div className="text-2xl  font-bold">
-          <Link to={"/home"}>dasTEkEdu</Link>{" "}
+          <Link to={"/home"}>InstaStudy AI</Link>{" "}
         </div>
         <div className="hidden sm:block md:block lg:block xl:block">
           <div className="text-gray-500 font-semibold mt-2 flex space-x-6">

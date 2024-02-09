@@ -18,6 +18,21 @@ def start_query():
     return jsonify({"task_id": task.id}), 202
 
 
+@api_blueprint.route('/subject', methods=['POST'])
+def subject_chat():
+    prompt = request.form['prompt']
+    subject = request.form['subject']
+    if 'img' in request.files:
+        image = request.files['img']
+        image_data = image.read()
+        task = query_openai_assistant.delay(
+            "none", prompt, image_data, subject)
+    else:
+        task = query_openai_assistant.delay(
+            "none", prompt, image_data, subject)
+    return jsonify({"task_id": task.id}), 202
+
+
 @api_blueprint.route('/clear', methods=['POST'])
 def clear_task():
     if "msg" in request.form and "task_id" in request.form:

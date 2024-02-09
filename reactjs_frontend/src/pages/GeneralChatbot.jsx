@@ -1,30 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { MdAddToPhotos } from "react-icons/md";
-import { BiSolidLike } from "react-icons/bi";
-import { BiSolidDislike } from "react-icons/bi";
-import { FaShareFromSquare } from "react-icons/fa6";
-import { FaCopy } from "react-icons/fa";
 import axios from "axios";
 import MathJaxComponent from "../components/MathJaxComponent";
 import { useUserAuth } from "../UserAuth";
+import { storage } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const ChatComponent = ({ endpoint }) => {
   const lastMessageRef = useRef(null);
   const fileInputRef = useRef(null);
   const [askMsg, setAskMsg] = useState(false);
   const [file, setFile] = useState(null);
-  const [filedata, setfiledata] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
-  const [imageUrl_2, setImageUrl_2] = useState(null);
+  const [imageUrl, setImageUrl] = useState([]);
+  const [currentUrl, setCurrentUrl] = useState("");
   const [taskID, setTaskID] = useState("");
   const { user } = useUserAuth();
-  useEffect(() => {
-    if (filedata) {
-      setImageUrl(URL.createObjectURL(filedata));
-      setImageUrl_2(URL.createObjectURL(filedata));
-    }
-  }, [filedata]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,6 +24,7 @@ const ChatComponent = ({ endpoint }) => {
           `http://localhost:5000/api/progress/${taskID}`
         );
         const newMessages = response.data["data"];
+        newMessages.shift();
 
         if (newMessages.length > 0) {
           // Find the index of the last known message in the new messages array
@@ -88,9 +81,20 @@ const ChatComponent = ({ endpoint }) => {
     };
   }, [askMsg]);
 
-  const handleFilechange = (event) => {
-    setfiledata(event.target.files[0]);
+  const handleFilechange = async (event) => {
     setFile(event.target.files[0]);
+    const imageRef = ref(
+      storage,
+      new Date().toISOString() + "_" + event.target.files[0].name
+    );
+    await uploadBytes(imageRef, event.target.files[0]).then((snapshot) => {
+      console.log("Uploaded the image");
+      console.log(snapshot);
+    });
+    getDownloadURL(imageRef).then((refUrl) => {
+      setImageUrl(...imageUrl, refUrl);
+      setCurrentUrl(refUrl);
+    });
   };
 
   const triggerFileInput = () => {
@@ -103,8 +107,12 @@ const ChatComponent = ({ endpoint }) => {
   // Function to handle the submission of the message
 
   const sendMessage = async () => {
-    if (inputValue.trim()) {
-      const userMessage = { image: filedata, text: inputValue, sender: "user" };
+    if (inputValue.trim() || file) {
+      const userMessage = {
+        image: currentUrl,
+        text: inputValue,
+        sender: "user",
+      };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
       try {
@@ -131,8 +139,7 @@ const ChatComponent = ({ endpoint }) => {
       }
 
       setInputValue("");
-      setfiledata("");
-      setImageUrl_2("");
+      setCurrentUrl("");
     }
   };
 
@@ -155,14 +162,15 @@ const ChatComponent = ({ endpoint }) => {
                   msg.sender === "user" ? "bg-black text-white" : "bg-white"
                 }`}
               >
+                {/* {msg.text} */}
                 <MathJaxComponent content={msg.text} />
-                <img src={imageUrl} />
+                <img src={msg.image} />
               </div>
             </div>
           ))}
         </div>
         <div className="p-3 bg-white flex-none">
-          <img src={imageUrl_2} />
+          <img src={currentUrl} />
           <div className="flex rounded-lg border-2 border-gray-300 overflow-hidden">
             <input
               type="file"

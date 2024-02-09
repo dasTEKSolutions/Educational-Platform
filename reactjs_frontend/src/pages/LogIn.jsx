@@ -33,11 +33,9 @@ export default function LogIn() {
   };
 
   useEffect(() => {
-
-    if(user){
-      navigate("/dashboard")
+    if (user) {
+      navigate("/dashboard");
     }
-
   });
 
   return (
@@ -66,7 +64,7 @@ export default function LogIn() {
               id="password"
               className="my-2 w-80 border border-gray-500 p-1 rounded-lg"
               placeholder="  Enter your password"
-              type=" password"
+              type="password"
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>

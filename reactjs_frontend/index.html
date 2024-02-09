@@ -11,6 +11,32 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  <!-- In your public/index.html, add the MathJax script in the head section -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      chtml: {
+        displayAlign: 'left',
+        displayIndent: '0px',
+        linebreaks: { automatic: true },
+        scale: 1.1, // Adjust the scale as needed
+      },
+      startup: {
+        ready: () => {
+          console.log('MathJax is ready');
+          MathJax.startup.defaultReady();
+          MathJax.startup.promise.then(() => {
+            // Typeset the initial content or any dynamic content that was loaded before MathJax was ready
+          });
+        }
+      }
+    };
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js" async></script>
 </body>
 

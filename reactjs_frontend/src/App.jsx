@@ -1,5 +1,5 @@
 import Fotter from "./components/Fotter";
-import HOMEWORKHELP from "./pages/HomeWorkHelp";
+import HOMEWORKHELP from "./pages/Dashboard";
 import Home from "./pages/Home";
 import { Routes, Route } from "react-router-dom";
 import LogIn from "./pages/LogIn";
@@ -10,6 +10,7 @@ import Threads from "./pages/Threads";
 import IndividualThread from "./pages/IndividualThread";
 import { UserAuthContextProvider } from "./UserAuth";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Dashboard from "./pages/Dashboard";
 
 export default function App() {
   return (
@@ -23,13 +24,13 @@ export default function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <HOMEWORKHELP />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/chatbot" element={<Chatbot />} />
+          <Route path="/chatbot/:subject" element={<Chatbot />} />
           <Route path="/gen-chatbot" element={<GeneralChatbot />} />
           <Route path="/threads/:threadId" element={<IndividualThread />} />
         </Routes>

@@ -16,70 +16,56 @@ const ChatComponent = ({ endpoint }) => {
   const [currentUrl, setCurrentUrl] = useState("");
   const [taskID, setTaskID] = useState("");
   const { user } = useUserAuth();
+  const [messages, setMessages] = useState([]);
+  const ws = useRef(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/progress/${taskID}`
-        );
-        const newMessages = response.data["data"];
-        newMessages.shift();
+    // Use the endpoint prop to establish the WebSocket connection
+    ws.current = new WebSocket(endpoint);
 
-        if (newMessages.length > 0) {
-          // Find the index of the last known message in the new messages array
-          const lastKnownMsgIndex = lastMessageRef.current
-            ? newMessages.findIndex((msg) => msg === lastMessageRef.current)
-            : -1;
-
-          // Get all messages after the last known message
-          const messagesToAdd = newMessages.slice(lastKnownMsgIndex + 1);
-
-          // Filter out "done" and empty messages
-          const validMessagesToAdd = messagesToAdd.filter(
-            (msg) => msg !== "done" && msg.trim() !== ""
-          );
-
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            ...validMessagesToAdd.map((text) => ({ text, sender: "server" })),
-          ]);
-
-          // Update the last message reference
-          if (validMessagesToAdd.length > 0) {
-            lastMessageRef.current =
-              validMessagesToAdd[validMessagesToAdd.length - 1];
-          }
-
-          // Stop polling if "done" message is received
-          if (messagesToAdd.includes("done")) {
-            const { data } = await axios.post(
-              "http://localhost:5000/api/clear",
-              {
-                msg: "recv_clear_data",
-                task_id: taskID,
-              }
-            );
-            setAskMsg(false);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
+    ws.current.onopen = () => {
+      console.log("WebSocket connection established");
     };
 
-    let intervalId;
-    if (askMsg) {
-      fetchData();
-      intervalId = setInterval(fetchData, 5000);
-    }
+    ws.current.onmessage = (event) => {
+      const messageData = JSON.parse(event.data);
+
+      setMessages((prevMessages) => {
+        // Check if there are any messages and the last message is from the server
+        if (
+          prevMessages.length > 0 &&
+          prevMessages[prevMessages.length - 1].sender === "server"
+        ) {
+          // Create a new array with all but the last message
+          const restOfMessages = prevMessages.slice(0, -1);
+
+          // Copy the last message and append the new text
+          const lastMessage = { ...prevMessages[prevMessages.length - 1] };
+          lastMessage.text += messageData.resp;
+
+          // Return the new array of messages
+          return [...restOfMessages, lastMessage];
+        } else {
+          // If the last message is not from the server or there are no messages,
+          // add a new server message
+          return [
+            ...prevMessages,
+            { text: messageData.resp, sender: "server", image: "" },
+          ];
+        }
+      });
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
+      if (ws.current) {
+        ws.current.close();
       }
     };
-  }, [askMsg]);
+  }, [endpoint]); // Dependency array includes endpoint to re-establish connection if endpoint changes
 
   const handleFilechange = async (event) => {
     setFile(event.target.files[0]);
@@ -101,7 +87,6 @@ const ChatComponent = ({ endpoint }) => {
     fileInputRef.current.click();
   };
 
-  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
   // Function to handle the submission of the message
@@ -115,28 +100,13 @@ const ChatComponent = ({ endpoint }) => {
       };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
-      try {
-        const { data } = await axios.post(
-          "http://localhost:5000/api/start",
-          {
-            prompt: inputValue,
-            img: file,
-            uid: user.uid,
-          },
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        if (data["task_id"]) {
-          setTaskID(data["task_id"]);
-          setAskMsg(!askMsg);
-        }
-      } catch (error) {
-        console.error("There was an error sending the message:", error);
-      }
+      ws.current.send(
+        JSON.stringify({
+          message: inputValue,
+          image_url: currentUrl,
+          subject: "general",
+        })
+      );
 
       setInputValue("");
       setCurrentUrl("");

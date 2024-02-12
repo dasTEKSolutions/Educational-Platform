@@ -31,7 +31,10 @@ export default function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/chatbot/:subject" element={<Chatbot />} />
-          <Route path="/gen-chatbot" element={<GeneralChatbot />} />
+          <Route
+            path="/gen-chatbot"
+            element={<GeneralChatbot endpoint="ws://localhost:5000/chat" />}
+          />
           <Route path="/threads/:threadId" element={<IndividualThread />} />
         </Routes>
         {/* <Fotter /> */}

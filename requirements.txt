@@ -1,6 +1,4 @@
-flask
-flask_cors
-celery[librabbitmq,redis,auth,msgpack]
+fastapi
 openai
 requests
-gunicorn
+uvicorn[standard]

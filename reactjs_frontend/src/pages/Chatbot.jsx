@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { MdAddToPhotos } from "react-icons/md";
 import { IoSendSharp } from "react-icons/io5";
 import { MdCalculate } from "react-icons/md";
@@ -7,60 +7,60 @@ import { BiSolidLike } from "react-icons/bi";
 import { BiSolidDislike } from "react-icons/bi";
 import { FaShareFromSquare } from "react-icons/fa6";
 import { FaCopy } from "react-icons/fa";
-import axios from "axios";
 import MathJaxComponent from "../components/MathJaxComponent";
 import { storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const PhotoUploadComponent = () => {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
+  const ws = useRef(null);
   const fileInputRef = useRef(null);
-
   const [file, setFile] = useState(null);
-  const [askMsg, setAskMsg] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState("");
-  const [imageurl_2, setImageUrl2] = useState("");
-  const [taskID, setTaskID] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
   const { subject } = useParams();
-  const [showAns, setShowAns] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resp = await axios.get(
-          `http://localhost:5000/api/progress/${taskID}`
-        );
-        if (resp.data["state"] == "SUCCESS") {
-          const msgsArr = resp.data["data"];
-          msgsArr.shift();
-          let str = "";
-          msgsArr.map((e) => {
-            str += e;
-            str += "\n";
-          });
-          setResponse(str);
-          setLoading(false);
-          setAskMsg(!askMsg);
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
+    // Initialize WebSocket connection
+    ws.current = new WebSocket("ws://localhost:5000/chat");
+    ws.current.onopen = () => {
+      console.log("WebSocket Connected");
+    };
+    ws.current.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      setResponse((response) => `${response ? response : ""}${message.resp}`);
+      setLoading(false);
     };
 
-    let intervalId;
-    if (askMsg) {
-      fetchData();
-      intervalId = setInterval(fetchData, 5000);
-    }
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setLoading(false);
+    };
+    ws.current.onclose = () => console.log("WebSocket Disconnected");
 
+    // Cleanup on component unmount
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      ws.current.close();
     };
-  }, [askMsg]);
+  }, []);
 
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      setLoading(true);
+      ws.current.send(
+        JSON.stringify({
+          message: inputValue,
+          image_url: imgUrl,
+          subject: subject,
+        })
+      );
+    }
+  };
   const handleFilechange = async (event) => {
     setFile(event.target.files[0]);
     const imageRef = ref(
@@ -68,12 +68,10 @@ const PhotoUploadComponent = () => {
       new Date().toISOString() + "_" + event.target.files[0].name
     );
     await uploadBytes(imageRef, event.target.files[0]).then((snapshot) => {
-      console.log("Uploaded the image");
-      console.log(snapshot);
+      console.log("Uploaded Image");
     });
     getDownloadURL(imageRef).then((refUrl) => {
-      setCurrentUrl(refUrl);
-      setImageUrl2(refUrl);
+      setImgUrl(refUrl);
     });
   };
 
@@ -81,40 +79,9 @@ const PhotoUploadComponent = () => {
     fileInputRef.current.click();
   };
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleSubmit = async () => {
-    setShowAns(true);
-    setLoading(true);
-    setResponse(null);
-    try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/start",
-        {
-          prompt: inputValue,
-          img: file,
-          uid: subject,
-        },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      if (data["task_id"]) {
-        setTaskID(data["task_id"]);
-        setAskMsg(!askMsg);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setResponse({ error: "Failed to fetch data" });
-    }
-  };
-
   return (
     <div className="container mx-auto p-4 m-8   bg-white shadow ">
+      <img src={imgUrl} alt="" />
       <div className="border flex align-middle  justify-around p-1  border-gray-900 rounded-3xl h-16">
         <div className=" border  rounded-lg ">
           <input
@@ -155,9 +122,7 @@ const PhotoUploadComponent = () => {
         </button>
       </div>
 
-      <img src={imageurl_2} alt="" />
-
-      {showAns ? <div className="font-bold m-5 text-xl ">Answer: </div> : ""}
+      <div className="font-bold m-5 text-xl ">Answer: </div>
 
       <div className="mt-4  p-4 rounded">
         {loading ? (

@@ -1,20 +1,24 @@
 import React from 'react'
-import Hero from '../components/Home/Hero'
-import Feautures from '../components/Home/Feautures'
-import UseCases from '../components/Home/UseCases'
-import Institutes from '../components/Home/Institutes'
-import CTA from '../components/Home/CTA'
+import Hero from '../components/home/Hero'
+import VideoSection from '../components/home/VideoSection'
+import Subjects from '../components/home/Subjects'
+import Reviews from '../components/home/Reviews'
+import Feautures from '../components/home/Feautures'
+import Fotter from '../components/Fotter'
 import Navbar from '../components/Navbar'
-
-export default function () {
+export default function Home() {
   return (
-    <>
-     <Navbar/>
-     <Hero/>
-     <Feautures/>
-     <UseCases/>
-     <Institutes/>
-     <CTA/>
-    </>
+   <>
+   <Navbar/>
+    <div  className=''>
+      <div className='h-[100px]'></div>
+      <Hero/>
+      <VideoSection/>
+      <Subjects/>
+      <Reviews/>
+      <Feautures/>
+      <Fotter/>
+    </div>
+   </>
   )
 }

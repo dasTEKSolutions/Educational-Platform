@@ -3,6 +3,18 @@
 
 <head>
   <meta charset="UTF-8" />
+  <style>
+    body {
+      background-size: 20px 20px;
+      background-image:
+        linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vite + React</title>
@@ -11,33 +23,6 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
-  <!-- In your public/index.html, add the MathJax script in the head section -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true,
-        processEnvironments: true
-      },
-      chtml: {
-        displayAlign: 'left',
-        displayIndent: '0px',
-        linebreaks: { automatic: true },
-        scale: 1.1, // Adjust the scale as needed
-      },
-      startup: {
-        ready: () => {
-          console.log('MathJax is ready');
-          MathJax.startup.defaultReady();
-          MathJax.startup.promise.then(() => {
-            // Typeset the initial content or any dynamic content that was loaded before MathJax was ready
-          });
-        }
-      }
-    };
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js" async></script>
 </body>
 
 </html>

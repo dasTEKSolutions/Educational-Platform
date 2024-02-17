@@ -1,12 +1,78 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.websockets import WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel
 import asyncio
 import uvicorn
+import hashlib
 from openai import OpenAI
 
 
 app = FastAPI()
 client = OpenAI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173",
+                   "https://localhost:5173"],  # List of allowed origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+
+uri = "mongodb+srv://sk2:1123@testedu-cluster.4v3vaq7.mongodb.net/?retryWrites=true&w=majority"
+
+dbClient = AsyncIOMotorClient(uri)
+database = dbClient["nexgenstudy"]
+users_collection = database['users']
+
+
+class User(BaseModel):
+    uid: str
+    username: str
+    email: str
+    firstname: str
+    lastname: str
+    gender: str
+    standard: str
+    institute: str
+
+
+@app.post("/users/", response_model=User)
+async def create_item(item: User):
+    uid = item.uid
+    hashed_uid = hashlib.sha512(str(uid).encode('utf-8')).hexdigest()
+    item.uid = hashed_uid
+    result = await users_collection.insert_one(item.model_dump())
+    created_user = await users_collection.find_one({"_id": result.inserted_id})
+    return created_user
+
+
+@app.get("/items/{item_id}", response_model=User)
+async def read_item(item_id: str):
+    item = await users_collection.find_one({"_id": item_id})
+    if item:
+        return item
+    raise HTTPException(status_code=404, detail="Item not found")
+
+
+@app.put("/items/{item_id}", response_model=User)
+async def update_item(item_id: str, item: User):
+    updated_item = await users_collection.find_one_and_update(
+        {"_id": item_id}, {"$set": item.dict()}
+    )
+    if updated_item:
+        return item
+    raise HTTPException(status_code=404, detail="Item not found")
+
+# @app.delete("/items/{item_id}", response_model=User)
+# async def delete_item(item_id: str):
+#     deleted_item = await collection.find_one_and_delete({"_id": item_id})
+#     if deleted_item:
+#         return deleted_item
+#     raise HTTPException(status_code=404, detail="Item not found")
 
 lut = {
     "general": "Hey AI, you are a tutor expert. When I provide a question, regardless of the subject, offer a direct and detailed explanation suitable for a high school/college student. Ensure your answer is comprehensive, clear, and requires no further input for clarification. Avoid subjective opinions, focusing instead on delivering accurate and relevant information. The goal is to provide a straightforward, ready-to-use answer, enabling students to understand and apply the concepts discussed independently. In your response, prioritize clarity and succinctness. Explain the key points in short and necessary steps to answer the question, ensuring the explanation is accessible and facilitates learning across any subject area.",
@@ -89,6 +155,8 @@ async def assitant(ws: WebSocket):
                     if t not in messages_list and t != "":
                         messages_list.append(t)
                         await ws.send_json({"resp": t})
+            await ws.send_json({"resp": "done"})
+
     except WebSocketDisconnect:
         print("Connection Disconnected")
 
@@ -154,6 +222,7 @@ async def chat(ws: WebSocket):
                     if chunk.choices[0].delta.content is not None:
                         await asyncio.sleep(0.1)
                         await ws.send_json({"resp": chunk.choices[0].delta.content})
+                await ws.send_json({"resp": "done"})
     except WebSocketDisconnect:
         print("WebSocket Disconnected")
 

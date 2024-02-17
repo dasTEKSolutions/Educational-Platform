@@ -18,7 +18,7 @@ const firebaseConfig = {
   storageBucket: "dastek-edu.appspot.com",
   messagingSenderId: "182505445583",
   appId: "1:182505445583:web:4a12aa0a375e7387dcffba",
-  measurementId: "G-VKXTS79SPP",
+  measurementId: "G-VKXTS79SPP"
 };
 
 // Initialize Firebase

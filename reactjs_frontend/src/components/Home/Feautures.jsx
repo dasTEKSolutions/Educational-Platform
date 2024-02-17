@@ -1,73 +1,41 @@
-import math from '../../assets/math.jpg'
+import React from 'react'
+import { HiArrowSmRight } from 'react-icons/hi';
+import { MdFileDownloadDone } from "react-icons/md";
+import roboto from '../../assests/roboto.png'
+import phonerobo from '../../assests/phone-robo.png'
 
 export default function Feautures() {
     return (
         <>
-            <div className='mx-6 mt-8'>
-                <div className='mx-auto'>
-                    <center id='text' className='font-bold m-5 h-14 underline text-4xl' >Chatbots</center>
-                    <div className=''>
-                        <div id='img' className='grid sm:flex'>
-                        <div class=" m-auto max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                <a href="#">
-                                    <img class="rounded-t-lg" src={math} alt="" />
-                                </a>
-                                <div class="p-5">
-                                    <a href="#">
-                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Math chatbot</h5>
-                                    </a>
-                                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                                    <a href="/login" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white">
-                                        TRY NOW
-                                        <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                                        </svg>
-                                    </a>
+            <main className='m-8 mb-20 feautures rounded-xl p-10  shadow-2xl   mt-20 '>
+                <h3 className='text-4xl font-bold text-gradient flex justify-center text align-middle'>Feautures that will make your study more productive </h3>
+                <p className='flex justify-center align-middle font-semibold text-gray-700   m-3'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime iste voluptatibus nobis.Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                <section className='flex justify-around align-middle px-10 py-5 m-8 border-2 border-black rounded-3xl'>
+                
+                    <ul className='p-3'>
+                        <li className='m-5 font-semibold font-slate-600 text-xl   '><div className='flex align-middle justify-center'><MdFileDownloadDone className='text-green-600 m-1 mr-2' size={30} /> these are feautures so that we can stand out in our life</div></li>
+                        <li className='m-5 font-semibold font-slate-600 text-xl   '><div className='flex align-middle justify-center'><MdFileDownloadDone className='text-green-600 m-1 mr-2' size={30} /> these are feautures so that we can stand out in our life</div></li>
+                        <li className='m-5 font-semibold font-slate-600 text-xl   '><div className='flex align-middle justify-center'><MdFileDownloadDone className='text-green-600 m-1 mr-2' size={30} /> these are feautures so that we can stand out in our life</div></li>
+                        <li className='m-5 font-semibold font-slate-600 text-xl   '><div className='flex align-middle justify-center'><MdFileDownloadDone className='text-green-600 m-1 mr-2' size={30} /> these are feautures so that we can stand out in our life</div></li>
+                        <li className='m-5 font-semibold font-slate-600 text-xl   '><div className='flex align-middle justify-center'><MdFileDownloadDone className='text-green-600 m-1 mr-2' size={30} /> these are feautures so that we can stand out in our life</div></li>
+                        <li className='m-5 font-semibold font-slate-600 text-xl   '><div className='flex align-middle justify-center'><MdFileDownloadDone className='text-green-600 m-1 mr-2' size={30} /> these are feautures so that we can stand out in our life</div></li>
+                        <center>
+                            <button type="button" className="relative text-white bg-blackhover:bg-gradient-to-bl mt-4 focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center ring-animation">
+                                <div className='flex items-center justify-center text-2xl gap-x-3'>
+                                    Start for free  <HiArrowSmRight size={30} />
                                 </div>
-                            </div>
+                                <div className="absolute top-0 right-0 bottom-0 left-0 rounded-lg" style={{ animation: 'ring-animation 2s infinite' }}></div>
+                            </button>
+                        </center>
+                    </ul>
 
-                             {/* n-----------------------=---------------------------------------------- */}
-                             <div class=" m-auto max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                <a href="#">
-                                    <img class="rounded-t-lg" src={math} alt="" />
-                                </a>
-                                <div class="p-5">
-                                    <a href="#">
-                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Physics chatbot</h5>
-                                    </a>
-                                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                                    <a href="/login" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-whitebg-black text-white">
-                                        TRY NOW
-                                        <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-
-                               {/* n-----------------------=---------------------------------------------- */}
-                               <div class=" m-auto max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                                <a href="#">
-                                    <img class="rounded-t-lg" src={math} alt="" />
-                                </a>
-                                <div class="p-5">
-                                    <a href="#">
-                                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Chemistry chatbot</h5>
-                                    </a>
-                                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                                    <a href="/login" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-whitebg-black text-white">
-                                        TRY NOW
-                                        <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
+                    <div className='grid'>
+                    {/* <img src={roboto} className=' absolute z-200  h-[400px] top- '/> */}
+                        <img src={phonerobo} className=' rounded-xl m-3  h-[400px] '/>
+                        
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
         </>
     )
 }

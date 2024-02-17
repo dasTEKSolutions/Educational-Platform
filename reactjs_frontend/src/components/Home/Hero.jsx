@@ -1,31 +1,54 @@
-import React from 'react'
-import { FaArrowRight } from "react-icons/fa";
-import img from '../../assets/hero.jpg'
-import { Link } from 'react-router-dom';
+import React from "react";
+import { HiArrowSmRight } from "react-icons/hi";
+import { Link } from "react-router-dom";
+import { TypeAnimation } from "react-type-animation";
 
 export default function Hero() {
   return (
     <>
-      <div className='mx-6'>
-      <div className='sm:flex sm:justify-around sm:mt-11 sm:flex-1 md:flex md:justify-around md:mt-11 md:flex-1 lg:flex lg:justify-around lg:mt-11 lg:flex-1'>
-          <div className=''>
-            <div id='text' className='text-7xl h-96 sm:text-8xl font-bold overflow-y-scroll no-scrollbar'>
-              CUSTOM GPT <br/> FOR YOUR <br/>STUDIES 
-            </div>
-            <span className='text-gray-700 '>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam iste nulla<br />  vitae repellendus beatae deleniti suscipit rerum velit, sequi corporis laborum,<br />  .</span>
-            <Link to={'/login'}>
-            <button type="button" className="text-white mt-7 mx-auto    ml-7 bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:    ring-gray-700 dark:border-gray-700 capitalize">
-            
-             <div className='flex p-1 align-middle gap-2'>TRY NOW <FaArrowRight className='m-auto align-middle justify-center' /></div>
-            </button>
-             </Link>
-          </div>
-          <div>
-            <img id='img' src={img} className='rounded-lgf h-[400px]' />
-          </div>
+      <center>
+        <div className="rounded-3xl text-lg bg-gray-200 border-2 border-gray-300 shadow-2xl text-black font-semibold m-auto w-[300px]  py-2 z-0 ">
+          &#129321; <span className="text-gradient font-bold">10X</span> more
+          productivity
         </div>
-
-      </div>
+        <section className=" w-[70vw] m-[40px]">
+          <span className="text-[78px] text-black font-bold ">
+            Experience the Next Generation of Education{" "}
+          </span>
+          <br />{" "}
+          <TypeAnimation
+            sequence={[
+              // Same substring at the start will only be typed out once, initially
+              "Advanced Learning",
+              1000, // wait 1s before replacing "Mice" with "Hamsters"
+              "Comprehensive Understanding",
+              1000,
+              "Strategic Studying",
+              1000,
+              "Interactive Education",
+              1000,
+            ]}
+            wrapper="span"
+            className="text-8xl  text-gradient font-bold"
+            speed={50}
+            repeat={Infinity}
+          />
+          <p className="my-8 w-[700px] font-semibold bg-gray-200 p-3 border-2 border-gray-300 shadow-lg rounded-full text-xl text-black">
+            Any question. Any subject. Get instant, step-by-step solutions{" "}
+          </p>
+          <Link to="/login">
+            <button
+              type="button"
+              className="relative text-white bg-black focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-full text-sm px-5 py-2.5 text-center "
+            >
+              <div className="flex items-center justify-center text-xl gap-x-3">
+                Start for free <HiArrowSmRight size={20} />
+              </div>
+              <div className="absolute top-0 right-0 bottom-0 left-0 rounded-lg"></div>
+            </button>
+          </Link>
+        </section>
+      </center>
     </>
-  )
+  );
 }

@@ -1,44 +1,42 @@
-import Fotter from "./components/Fotter";
-import HOMEWORKHELP from "./pages/Dashboard";
-import Home from "./pages/Home";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
-import LogIn from "./pages/LogIn";
-import SignUp from "./pages/SignUp";
-import Chatbot from "./pages/Chatbot";
-import GeneralChatbot from "./pages/GeneralChatbot";
-import Threads from "./pages/Threads";
-import IndividualThread from "./pages/IndividualThread";
-import { UserAuthContextProvider } from "./UserAuth";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
+import PageNotFound from "./pages/PageNotFound";
 import Dashboard from "./pages/Dashboard";
+import AiChar from "./pages/AiChat";
+import Disscussions from "./pages/Disscussions";
+import Individualdisscussion from "./pages/Indivialdisscussion";
+import Chathistory from "./pages/Chathistory";
+import About from "./pages/About";
+import Blogs from "./pages/Blogs";
+import SignupForm from "./pages/Signup";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import ProfileEdit from "./pages/ProfileEdit";
+import { UserAuthContextProvider } from "./UserAuth";
 
 export default function App() {
   return (
-    <>
-      <UserAuthContextProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/threads" element={<Threads />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/login" element={<LogIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/chatbot/:subject" element={<Chatbot />} />
-          <Route
-            path="/gen-chatbot"
-            element={<GeneralChatbot endpoint="ws://localhost:5000/chat" />}
-          />
-          <Route path="/threads/:threadId" element={<IndividualThread />} />
-        </Routes>
-        {/* <Fotter /> */}
-      </UserAuthContextProvider>
-    </>
+    <UserAuthContextProvider>
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+        <Route exact path="/dashboard" element={<Dashboard />} />
+        <Route exact path="/Aichat" element={<AiChar />} />
+        <Route exact path="/discussions" element={<Disscussions />} />
+        <Route
+          exact
+          path="/discussions/id"
+          element={<Individualdisscussion />}
+        />
+        <Route exact path="/chathistory" element={<Chathistory />} />
+        <Route exact path="/About" element={<About />} />
+        <Route exact path="/blogs" element={<Blogs />} />
+        <Route exact path="/Signup" element={<SignupForm />} />
+        <Route exact path="/login" element={<Login />} />x
+        <Route exact path="/profile" element={<Profile />} />
+        <Route exact path="/profileEdit" element={<ProfileEdit />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </UserAuthContextProvider>
   );
 }

@@ -37,7 +37,7 @@ export function UserAuthContextProvider({ children }) {
     };
   }, []);
 
-  function isAuthenticted() {
+  function isAuthenticated() {
     if (user) {
       return true;
     } else {
@@ -47,7 +47,7 @@ export function UserAuthContextProvider({ children }) {
 
   return (
     <userAuthContext.Provider
-      value={{ user, logIn, signUp, logOut, googleSignIn }}
+      value={{ user, logIn, signUp, logOut, googleSignIn, isAuthenticated }}
     >
       {children}
     </userAuthContext.Provider>

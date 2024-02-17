@@ -1,116 +1,187 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+import { TbMathSymbols } from "react-icons/tb";
+import { HiArrowSmRight } from "react-icons/hi";
+import "tailwindcss/tailwind.css";
 import { useUserAuth } from "../UserAuth";
 
-export default function Navbar() {
-  const [onclick, setonclick] = useState(false);
-  const handleonclick = () => {
-    setonclick(!onclick);
-    console.log(onclick);
-  };
-  const { logOut, user } = useUserAuth();
+const DropdownItem = ({ children }) => {
+  return (
+    <div className=" rounded-2xl mx-1 transition ease-in duration-300 p-2">
+      {children}
+    </div>
+  );
+};
+
+const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { isAuthenticated } = useUserAuth();
+  const login = isAuthenticated(); // This should ideally be derived from your authentication state
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
-    <>
-      <nav className=" sm:mb-0 mb-10 sm:justify-around  md:justify-around  lg:justify-around  xl:justify-around  p-2 mt-2 flex justify-between  shadow-xl">
-        <div className="text-2xl  font-bold">
-          <Link to={"/home"}>InstaStudy AI</Link>{" "}
-        </div>
-        <div className="hidden sm:block md:block lg:block xl:block">
-          <div className="text-gray-500 font-semibold mt-2 flex space-x-6">
-            <Link to={"/Dashboard"}>
-              <div>Dashboard</div>
-            </Link>
-            <Link to={"/threads"}>
-              <div>Threads </div>
-            </Link>
-          </div>
-        </div>
-        <div
-          onClick={handleonclick}
-          className="align-middle justify-center block sm:hidden"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="h-6 w-6 text-gray-600"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
+    <header
+      className={`fixed font-semibold text-black w-full z-10 ${
+        isScrolled ? "bg-white shadow-md " : "bg-transparent "
+      } transition-all`}
+    >
+      <nav className="flex items-center justify-around p-4">
+        {/* Logo */}
+        <div className="logo">
+          <Link to="/">
+            <h1 className="text-xl font-bold ">NexGenStudy Ai</h1>
+          </Link>
         </div>
 
-        <div className="hidden sm:block md:block lg:block xl:block flex space-x-4">
-          {user ? (
-            <button
-              type="button"
-              onClick={logOut}
-              className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 capitalize"
-            >
-              Logout
-            </button>
+        {/* Menu items */}
+        {/* Menu items */}
+        <div className="hidden md:flex space-x-4 ">
+          {/* Add dropdown logic and items */}
+          {/* Dropdown */}
+          <div
+            className="dropdown flex justify-center items-center gap- 4 cursor-pointer"
+            onMouseEnter={() => setIsDropdownOpen(true)}
+            onMouseLeave={() => setIsDropdownOpen(false)}
+          >
+            <span className=" hover:text-green-700 transition ease-in duration-300">
+              Subjects
+            </span>
+            {isDropdownOpen ? (
+              <RiArrowDropUpLine className="m-[5px] transition-transform duration-300" />
+            ) : (
+              <RiArrowDropDownLine className="m-[5px] transition-transform duration-300" />
+            )}
+
+            {isDropdownOpen && (
+              <div className="absolute flex   mt-[300px] py-2 bg-white shadow-lg rounded- fxlade-in">
+                <div className="m-3 ">
+                  <DropdownItem>
+                    <div className="flex border-b-[3px] mb-2 ">
+                      <TbMathSymbols color="black" size={30} />
+                      <div className="ml-4">
+                        Maths
+                        <p className="text-orange-400 ">this is for maths</p>
+                      </div>
+                    </div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div className="flex border-b-[3px] mb-2 ">
+                      <TbMathSymbols color="black" size={30} />
+                      <div className="ml-4">
+                        Maths
+                        <p className="text-orange-400 ">this is for maths</p>
+                      </div>
+                    </div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div className="flex border-b-[3px] mb-2 ">
+                      <TbMathSymbols color="black" size={30} />
+                      <div className="ml-4">
+                        Maths
+                        <p className="text-orange-400 ">this is for maths</p>
+                      </div>
+                    </div>
+                  </DropdownItem>
+                </div>
+                <div className="m-3">
+                  <DropdownItem>
+                    <div className="flex border-b-[3px] mb-2 ">
+                      <TbMathSymbols color="black" size={30} />
+                      <div className="ml-4">
+                        Maths
+                        <p className="text-orange-400 ">this is for maths</p>
+                      </div>
+                    </div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div className="flex border-b-[3px] mb-2 ">
+                      <TbMathSymbols color="black" size={30} />
+                      <div className="ml-4">
+                        Maths
+                        <p className="text-orange-400 ">this is for maths</p>
+                      </div>
+                    </div>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <div className="flex border-b-[3px] mb-2 ">
+                      <TbMathSymbols color="black" size={30} />
+                      <div className="ml-4">
+                        Maths
+                        <p className="text-orange-400 ">this is for maths</p>
+                      </div>
+                    </div>
+                  </DropdownItem>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Link to={"/dashboard"}>
+            <div className="dropdown flex justify-center gap-1  align-middle">
+              <span>Chatbot</span>
+            </div>
+          </Link>
+          {/* <div className="dropdown">Pricing</div> */}
+          <Link to={"/discussions"}>
+            <div className="dropdown flex justify-center gap-1  align-middle">
+              <span>Discussions</span>
+            </div>
+          </Link>
+          <Link to={"/blogs"}>
+            <div className="dropdown flex justify-center gap-1  align-middle">
+              <span>Blogs</span>
+            </div>
+          </Link>
+          <Link to={"/about"}>
+            <div className="dropdown flex justify-center gap-1  align-middle">
+              <span>About</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Conditionally render buttons based on login state */}
+        <div className="hidden md:flex space-x-4">
+          {login ? (
+            <Link to="/dashboard">
+              <button className="bg-black  font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white">
+                <div className="flex items-center justify-center gap-x-3">
+                  Dashboard <HiArrowSmRight size={20} />
+                </div>
+              </button>
+            </Link>
           ) : (
-            <>
-              <Link to="/login">
-                <button
-                  type="button"
-                  className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 capitalize"
-                >
-                  Login
-                </button>
-              </Link>
-              <Link to="/signup">
-                <button
-                  type="button"
-                  className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 capitalize"
-                >
-                  Signup
-                </button>
-              </Link>
-            </>
+            <Link to="/login">
+              <button
+                type="button"
+                className="bg-black  font-medium rounded-lg text-sm px-5 py-2.5 text-center text-white"
+              >
+                <div className="flex items-center justify-center gap-x-3">
+                  Start for free <HiArrowSmRight size={20} />
+                </div>
+              </button>
+            </Link>
           )}
         </div>
       </nav>
-      <div className="align-middle justify-center block sm:hidden">
-        {onclick ? (
-          <div className="absolute z-10  w-full bg-white text-gray-500 font-semibold mt-2 grid space-x-6">
-            <center className="space-x-6">
-              <Link to={"/HOMEWORK-HELP"}>
-                <div>HOMEWORK HELP</div>
-              </Link>
-              <Link to={"/threads"}>
-                <div>Threads </div>
-              </Link>
-              <div className="grid w-64 mt-8">
-                <Link to={"/login"}>
-                  <button
-                    type="button"
-                    className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:    ring-gray-700 dark:border-gray-700 capitalize"
-                  >
-                    Login
-                  </button>
-                </Link>
-                <Link to={"/signup"}>
-                  <button
-                    type="button"
-                    className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:    ring-gray-700 dark:border-gray-700 capitalize"
-                  >
-                    signup
-                  </button>
-                </Link>
-              </div>
-            </center>
-          </div>
-        ) : (
-          ""
-        )}
-      </div>
-    </>
+    </header>
   );
-}
+};
+
+export default Navbar;

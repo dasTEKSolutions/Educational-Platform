@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import "./MathJax.css"; // Ensure you have the CSS file in the same directory
 
-const MathJaxComponent = ({ text }) => {
+const MathJaxComponent = ({ content }) => {
   const contentRef = useRef(null);
 
   useEffect(() => {
@@ -10,11 +9,11 @@ const MathJaxComponent = ({ text }) => {
         console.error(err)
       );
     }
-  }, [text]);
+  }, [content]);
 
   return (
     <div ref={contentRef} className="mathjax-container">
-      <div>{text}</div>
+      {content}
     </div>
   );
 };

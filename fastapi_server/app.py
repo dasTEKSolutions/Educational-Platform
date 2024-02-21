@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.websockets import WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.server_api import ServerApi
 from pydantic import BaseModel
 import asyncio
 import uvicorn
@@ -24,7 +25,7 @@ app.add_middleware(
 
 uri = "mongodb+srv://sk2:1123@testedu-cluster.4v3vaq7.mongodb.net/?retryWrites=true&w=majority"
 
-dbClient = AsyncIOMotorClient(uri)
+dbClient = AsyncIOMotorClient(uri, server_api=ServerApi("1"))
 database = dbClient["nexgenstudy"]
 users_collection = database['users']
 
@@ -94,7 +95,7 @@ async def assitant(ws: WebSocket):
                 name="Educational Helper Bot",
                 instructions=lut.get(data['subject'], lut['maths']),
                 tools=[{"type": "code_interpreter"}],
-                model="gpt-4-1106-preview"
+                model="gpt-4-turbo-preview"
             )
             ai_thread = client.beta.threads.create()
 
@@ -190,16 +191,18 @@ async def chat(ws: WebSocket):
                             ],
                         }
                     ],
-                    max_tokens=1000,
+                    max_tokens=4096,
                     stream=True
                 )
                 for chunk in resp:
                     if chunk.choices[0].delta.content is not None:
                         await asyncio.sleep(0.1)
                         await ws.send_json({"resp": chunk.choices[0].delta.content})
+                await ws.send_json({"resp": "done"})
+
             else:
                 resp = client.chat.completions.create(
-                    model='gpt-4-vision-preview',
+                    model='gpt-4-turbo-preview',
                     messages=[
                         {
                             "role": "system",
@@ -215,7 +218,7 @@ async def chat(ws: WebSocket):
                             ],
                         }
                     ],
-                    max_tokens=1000,
+                    max_tokens=4096,
                     stream=True
                 )
                 for chunk in resp:

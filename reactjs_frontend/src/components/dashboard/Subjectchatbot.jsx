@@ -1,9 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { HiArrowSmRight } from "react-icons/hi";
-import { IoSend, IoImage, IoAttach } from "react-icons/io5";
+import { IoSend, IoImage } from "react-icons/io5";
 import DashboardNav from "./DashboardNav";
-import { BiSolidDislike, BiSolidLike } from "react-icons/bi";
-import { FaCopy, FaShareFromSquare } from "react-icons/fa6";
 import ContentRenderer from "../MathJaxComponent";
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -13,66 +10,84 @@ const QuestionForm = ({ content }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [currentUrl, setCurrentUrl] = useState("");
   const [useLatex, setUseLatex] = useState(false);
+  const [connectionError, setConnectionError] = useState("");
   const ws = useRef(null);
 
   useEffect(() => {
-    // Initialize WebSocket connection
+    connectWebSocket();
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [content]);
+
+  const connectWebSocket = () => {
     ws.current = new WebSocket("ws://localhost:5000/chat");
     ws.current.onopen = () => {
-      console.log("WebSocket Connected");
+      console.log("Server Connected");
+      setConnectionError("");
     };
     ws.current.onmessage = (e) => {
       const message = JSON.parse(e.data);
       if (message.resp === "done") {
         setUseLatex(true);
+      } else {
+        setData((data) => `${data ? data : ""}${message.resp}`);
       }
-      setData((data) => `${data ? data : ""}${message.resp}`);
       setIsLoading(false);
     };
-
     ws.current.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      console.error("Server error:", error);
+      setConnectionError("Server encountered an error. Try again later.");
       setIsLoading(false);
     };
-    ws.current.onclose = () => console.log("WebSocket Disconnected");
-
-    // Cleanup on component unmount
-    return () => {
-      ws.current.close();
+    ws.current.onclose = () => {
+      console.log("Server Disconnected");
+      setConnectionError("Server disconnected. Attempting to reconnect...");
+      setTimeout(() => {
+        connectWebSocket();
+      }, 3000); // Attempt to reconnect after 3 seconds
     };
-  }, [content]);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
-    setData(null);
-    setUseLatex(false);
-    try {
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        ws.current.send(
-          JSON.stringify({
-            message: question,
-            image_url: "",
-            subject: content,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("There was an error!", error);
-      setIsLoading(false);
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      setIsLoading(true);
+      setData(null);
+      setUseLatex(false);
+      const messageData = JSON.stringify({
+        message: question,
+        image_url: currentUrl,
+        subject: content,
+      });
+      ws.current.send(messageData);
+    } else {
+      setConnectionError("Not connected to the server. Trying to reconnect...");
+      connectWebSocket(); // Attempt to reconnect
     }
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    setSelectedImage(file);
+    const imageRef = ref(storage, new Date().toISOString() + "_" + file.name);
+    await uploadBytes(imageRef, file).then(() => {
+      console.log("Uploaded the image");
+    });
+    getDownloadURL(imageRef).then((refUrl) => {
+      setCurrentUrl(refUrl);
+    });
   };
 
   const handleNewQuestion = () => {
     setQuestion("");
     setData(null);
     setSelectedImage(null);
-  };
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    setSelectedImage(file);
+    setCurrentUrl("");
   };
 
   return (
@@ -87,12 +102,14 @@ const QuestionForm = ({ content }) => {
           Any question. Any subject. Get instant, step-by-step solutions the
           moment you need them.
         </p>
+        {connectionError && <p className="text-red-500">{connectionError}</p>}
       </div>
       <div className="flex flex-col items-center justify-center p-4">
-        <form className="w-[800px] " onSubmit={handleSubmit}>
-          <div className="flex items-center  border-2 border-black w-[800px] px- py-1 rounded-2xl mb-4">
+        {currentUrl && <img src={currentUrl} alt="Selected" />}
+        <form className="w-full max-w-3xl" onSubmit={handleSubmit}>
+          <div className="flex items-center border-2 border-black px-4 py-2 rounded-2xl mb-4">
             <input
-              class="appearance-none bg-transparent  w-full text-gray-900 mr-3 py-1 px-2 leading-tight focus:outline-none h-16 "
+              className="appearance-none bg-transparent w-full text-gray-900 mr-3 py-1 px-2 leading-tight focus:outline-none"
               type="text"
               placeholder="What's your question?"
               aria-label="Question input"
@@ -100,12 +117,11 @@ const QuestionForm = ({ content }) => {
               onChange={(e) => setQuestion(e.target.value)}
               disabled={isLoading}
             />
-
             <button
               type="submit"
               className={`flex-shrink-0 ${
                 isLoading ? "text-gray-500" : "text-gray-700"
-              } text-md py-1 px-2 rounded`}
+              } py-1 px-2 rounded`}
               disabled={isLoading}
             >
               {isLoading ? "Loading..." : <IoSend size={25} />}
@@ -113,7 +129,7 @@ const QuestionForm = ({ content }) => {
             <label
               className={`flex-shrink-0 ${
                 isLoading ? "text-gray-500" : "text-gray-700"
-              } text-md py-1 px-2 rounded`}
+              } py-1 px-2 rounded cursor-pointer`}
             >
               <IoImage size={25} />
               <input
@@ -134,35 +150,18 @@ const QuestionForm = ({ content }) => {
                 <ContentRenderer text={data} />
               ) : (
                 <pre
-                  className={{
-                    whiteSpace: "pre-wrap", // Allows the text to wrap
-                    wordWrap: "break-word", // Breaks the word to prevent overflow
-                    overflowWrap: "break-word", // Ensures overflow text is wrapped
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                    overflowX: "hidden",
                   }}
                 >
                   {data}
                 </pre>
               )}
-              <div className="flex gap-x-4 text-gray-700 mt-5">
-                <BiSolidLike size={20} />
-                <BiSolidDislike size={20} />
-                <FaCopy size={20} />
-                <FaShareFromSquare size={20} />
-              </div>
             </div>
           )}
         </form>
-
-        {data && !isLoading && (
-          <button
-            className="bg-black mt-8 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200  font-medium rounded-full text-sm px-5 py-2.5 text-center text-white"
-            onClick={handleNewQuestion}
-          >
-            <div className="flex items-center justify-center gap-x-3">
-              One More Question ? <HiArrowSmRight size={20} />
-            </div>
-          </button>
-        )}
       </div>
     </>
   );

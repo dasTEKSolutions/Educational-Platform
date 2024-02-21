@@ -1,8 +1,7 @@
-.mathjax-container {
-  overflow-x: auto; /* Scrollbar will appear if content overflows */
-  overflow-y: hidden; /* Prevent vertical scrollbar */
-  max-width: 100%; /* Prevents overflow */
-  display: inline-block; /* Adjust as needed */
-  line-height: 2; /* Adjust line-height for better readability */
-  font-size: 1rem; /* Adjust base font size if necessary */
+.mathjax-format {
+  white-space: pre-wrap; /* Preserves whitespace and line breaks */
+  font-family: monospace;
+  font-size: large; /* Typically used in <pre> for equal character width */
+  word-wrap: break-word; /* Ensures long lines do not create horizontal scroll */
+  overflow-x: hidden; /* Hides horizontal scroll */
 }

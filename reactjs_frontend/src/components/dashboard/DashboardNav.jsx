@@ -54,7 +54,7 @@ const DashboardNav = ({ LOGO }) => {
                         onMouseEnter={() => setIsDropdownOpen(true)}
                         onMouseLeave={() => setIsDropdownOpen(false)}
                     >
-                       <Link to={'/dashboard'}> <span className=" hover:text-green-700 transition text-xl font-bold ease-in duration-300">Subjects</span></Link>
+                        <Link to={'/dashboard'}> <span className=" hover:text-green-700 transition text-xl font-bold ease-in duration-300">Subjects</span></Link>
                         {isDropdownOpen ? <RiArrowDropUpLine className='m-[5px] transition-transform duration-300' /> : <RiArrowDropDownLine className='m-[5px] transition-transform duration-300' />}
 
                         {isDropdownOpen && (
@@ -101,7 +101,7 @@ const DashboardNav = ({ LOGO }) => {
                 >
                     <span className="  transition ease-in duration-300 text-white font-bold  "><span className='flex align-middle justify-center pr-2' > <CgProfile className='m-1 text-white' size={20} />
                         profile</span></span>
-                    
+
                 </Link>
 
             </nav>
